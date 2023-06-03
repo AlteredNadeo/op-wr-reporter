@@ -1,15 +1,24 @@
 namespace Notify {
+  dictionary cache = dictionary();
+
   class Payload {
     string MapUid;
     uint64 Time;
 
-    Payload(string MapUid, uint64 Time) {
+    Payload(const string &in MapUid, uint64 Time) {
       this.MapUid = MapUid;
       this.Time = Time;
     }
   }
 
-  void Call(string mapUid, uint64 time) {
+  void Call(const string &in mapUid, uint64 time) {
+    uint64 cachedTime = 0;
+    if (cache.Get(mapUid, cachedTime) and cachedTime == time) {
+      return;
+    }
+
+    cache.Set(mapUid, time);
+
     Payload@ p = Payload(mapUid, time);
     startnew(CallSync, p);
   }
