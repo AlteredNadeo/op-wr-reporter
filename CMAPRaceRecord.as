@@ -4,7 +4,7 @@ namespace CMAPRaceRecord {
   const string PATCH_TXT = """
 foreach (Zone in _ZonesRecords) {
 		if (Zone.ZoneName == "World" && Zone.Records.count >= 1) {
-			SendCustomEvent("MLHook_Event_AlteredWRReporter_RaceRecord", ["" ^ Zone.Records[0].Time]);
+			SendCustomEvent("MLHook_Event_AlteredWRReporter_RaceRecord", ["" ^ Zone.Records[0].Score]);
 		}
 	}
 	return ZoneRecords;

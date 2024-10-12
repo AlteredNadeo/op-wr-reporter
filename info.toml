@@ -2,7 +2,7 @@
 name = "Altered WR Reporter"
 author = "kovacs@the418.io"
 category = "Utilities"
-version = "0.2.0"
+version = "0.2.1"
 
 [script]
-dependencies = ["MLHook"]
+dependencies = [ "MLHook" ]
