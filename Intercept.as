@@ -23,35 +23,34 @@ namespace Intercept {
         
         string url = req.Url.SubStr(43);
         
-        string[]@ matches = Regex::Match(url, """^/api/token/leaderboard/group/Personal_Best/map/([\w]{24,27})/top$""");
-        if (matches.Length != 2) {
-            return true;
-        }
-        // matches is [entire string, uid]
+        string[]@ matches = Regex::Match(url, """^/api/token/leaderboard/group/(.*)/map/([\w]{24,27})/top$""");
+        if (matches.Length > 0) {
+            // matches should be [entire string, group, uid]
 
-        Json::Value@ response = Json::Parse(req.Result);
-        if (!response.HasKey('mapUid') || !response.HasKey('tops')) {
-            warn('Matching request but unrecognised response data');
-            return true;
-        }
-        for (uint i = 0; i < response['tops'].Length; i++) {
-            if (!response['tops'][i].HasKey('zoneName')) {
-                warn('missing zoneName');
-                continue;
-            } else if (response['tops'][i]['zoneName'] == 'World') {
-                if (!response['tops'][i].HasKey('top')) {
-                    warn('missing top');
+            Json::Value@ response = Json::Parse(req.Result);
+            if (!response.HasKey('mapUid') || !response.HasKey('tops')) {
+                warn('Matching request but unrecognised response data');
+                return true;
+            }
+            for (uint i = 0; i < response['tops'].Length; i++) {
+                if (!response['tops'][i].HasKey('zoneName')) {
+                    warn('missing zoneName');
                     continue;
-                }
-                Json::Value@ top = response['tops'][i]['top'];
-                for (uint j = 0; j < top.Length; j++) {
-                    if (!top[j].HasKey('position') || !top[j].HasKey('score')) {
-                        warn('top missing position or score');
+                } else if (response['tops'][i]['zoneName'] == 'World') {
+                    if (!response['tops'][i].HasKey('top')) {
+                        warn('missing top');
                         continue;
                     }
-                    if (top[j]['position'] == 1) {
-                        Notify::Call(response['mapUid'], top[j]['score']);
-                        return true;
+                    Json::Value@ top = response['tops'][i]['top'];
+                    for (uint j = 0; j < top.Length; j++) {
+                        if (!top[j].HasKey('position') || !top[j].HasKey('score')) {
+                            warn('top missing position or score');
+                            continue;
+                        }
+                        if (top[j]['position'] == 1) {
+                            Notify::Call(response['mapUid'], top[j]['score']);
+                            return true;
+                        }
                     }
                 }
             }
