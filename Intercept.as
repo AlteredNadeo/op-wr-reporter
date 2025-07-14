@@ -23,7 +23,7 @@ namespace Intercept {
         
         string url = req.Url.SubStr(43);
         
-        string[]@ matches = Regex::Match(url, """^/api/token/leaderboard/group/(.*)/map/([\w]{24,27})/top$""");
+        string[]@ matches = Regex::Match(url, """^/api/token/leaderboard/group/(.*)/map/([\w]{24,27})/top(\?score=[0-9]*)?$""");
         if (matches.Length > 0) {
             // matches should be [entire string, group, uid]
 
